@@ -9,11 +9,11 @@ class Scrappering:
        response = requests.get(url)
       #  result =[]
        soup = bs4.BeautifulSoup(response.text,'lxml')
-       result = soup.select('.restaurants-list-ListCell__nameBlock--1hL7F')
+       result = soup.select('.listing_title')
        for start in result:
           print start.getText()
 
 
     
 emp1 = Scrappering()
-emp1.initScrapper("https://www.tripadvisor.com/Restaurants-g297733-zfp30-Lombok_West_Nusa_Tenggara.html",)
+emp1.initScrapper("https://www.tripadvisor.com/Attractions-g297733-Activities-c57-Lombok_West_Nusa_Tenggara.html#FILTERED_LIST",)
