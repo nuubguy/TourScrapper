@@ -51,18 +51,21 @@ class Scrappering:
    def fillPlace(self, result, finalResult,soup):
      for start in result:
           currentSoup = self.initBs4("https://www.tripadvisor.co.id"+start['href'])
-          currentPlace = TadPlace()
-          currentPlace.set_placeName(start.text)
-          currentPlace.set_Comment(self.findAllComment(currentSoup))
-          currentPlace.set_Rating(self.findRating(currentSoup))
-          print(currentPlace.get_placeName())
-          print(currentPlace.get_Comment())
-          print(currentPlace.get_Rating())
+          print(start.text)
+          print(self.findAllComment(currentSoup))
+          print(self.findRating(currentSoup))
+          print(self.openingHour(currentSoup))
+          print(self.recommendationHourToStay(currentSoup))
           finalResult.append(start.text)
 
    def findRating(self, soup):
      return soup.select('.overallRating')[0].text
 
+   def openingHour(self,soup):
+    return soup.select('.public-location-hours-LocationHours__bold--2oLr-, .public-location-hours-LocationHours__green--2VoIr')[0].find_next_sibling().text
+   
+   def recommendationHourToStay(self,soup):
+     return soup.select('.attractions-attraction-detail-about-card-AboutSection__sectionWrapper--3PMQg')[0].text
 
    def findAllComment(self, soup):
      comments = soup.select('.noQuotes')
