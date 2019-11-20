@@ -18,25 +18,61 @@ class Scrappering:
         print start.getText()  
 
 
+   def initBs4(self, url):
+     return bs4.BeautifulSoup(requests.get(url).text,'lxml')
+
+   def fillPlace(self, result, finalResult):
+     for start in result:
+          finalResult.append(start.getText())
+
 
 
    def initScrapper(self,surl):
+       finalResult = []
        url = surl
-       response = requests.get(url)
-       soup = bs4.BeautifulSoup(response.text,'lxml')
+
+       soup = self.initBs4(url)
 
       # find element inside a html tag based on class and element tag with 2 different class
        result = soup.select('.listing_title > a, .title_with_snippets > a')
+       
+       while len(finalResult) < 500:
+        self.fillPlace(result,finalResult)
+        secondTemp = "https://www.tripadvisor.co.id"+(soup.select('.unified > a, .pagination > a')[0])["href"]
+        result = self.initBs4(secondTemp).select('.listing_title > a, .title_with_snippets > a')
+        print(len(finalResult))
+
+        
+        print(finalResult)       
+        
+
+      #  print(finalResult)
+    
+
+            
+
+      # while len(finalResult)<500:
+
+         
+         
+         
+         
+         
+         
+         
+
 
        
-       for start in result:
-         #  text for place name
-          print start.getText()
-          self.detailPlace(start['href'])
-          print('------------------------------------------')
-          
-         #  link for detail page
-         #  print start["href"]
+
+         
+
+         
+
+       
+      #  print(secondTemp)
+      #  print(finalResult)    
+        
+      
 
 
 
