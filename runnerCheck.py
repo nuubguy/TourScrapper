@@ -67,6 +67,9 @@ class Scrappering:
      return soup.select('.overallRating')[0].text
    
    def findLocation(self, soup):
+     if len(soup.select('.locality'))==0:
+       return "TBA"
+
      return soup.select('.locality')[0].text
 
    def findImage(self, soup):
@@ -109,7 +112,7 @@ class Scrappering:
        finalResult = []
        url = surl
        
-       workbook = xlsxwriter.Workbook('LombokScrapper.xlsx')
+       workbook = xlsxwriter.Workbook('BaliScrapper.xlsx')
        worksheet = workbook.add_worksheet()
        worksheet.write(0,0,"Place")
        worksheet.write(0,1,"Comment")
@@ -125,8 +128,9 @@ class Scrappering:
       # find element inside a html tag based on class and element tag with 2 different class
        result = self.findElementPlaceName(soup)
        index =1
-       while index < 2000:
+       while index < 800:
         index = self.fillPlace(result,finalResult,soup,index,worksheet)
+        print(index)
         soup = self.reloadNextPage(soup)
         result = self.findElementPlaceName(soup)
         
@@ -141,4 +145,4 @@ class Scrappering:
 
     
 emp1 = Scrappering()
-emp1.initScrapper("https://www.tripadvisor.co.id/Attractions-g297733-Activities-Lombok_West_Nusa_Tenggara.html")
+emp1.initScrapper("https://www.tripadvisor.co.id/Attractions-g294226-Activities-Bali.html")
