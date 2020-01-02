@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import requests
-from BeautifulSoup import BeautifulSoup
+# from beautifulsoup4 import beautifulsoup4
 import bs4
 
 class TadPlace:
@@ -40,8 +40,7 @@ class Scrappering:
       if len(result)==0:
         return
 
-      for start in result:
-        print start.getText()  
+  
 
     # init soup for url
    def initBs4(self, url):
@@ -54,21 +53,32 @@ class Scrappering:
           print(start.text)
           print(self.findAllComment(currentSoup))
           print(self.findRating(currentSoup))
+          print(self.findImage(currentSoup))
           print(self.openingHour(currentSoup))
-          print(self.recommendationHourToStay(currentSoup))
+          # print(self.recommendationHourToStay(currentSoup))
           finalResult.append(start.text)
 
    def findRating(self, soup):
      return soup.select('.overallRating')[0].text
 
+
+   def findImage(self, soup):
+     images = soup.select('div > .basicImg')
+     result = []
+     for image in images:
+       result.append(image['data-lazyurl'])
+     return result    
+
    def openingHour(self,soup):
-    return soup.select('.public-location-hours-LocationHours__bold--2oLr-, .public-location-hours-LocationHours__green--2VoIr')[0].find_next_sibling().text
+      if len(soup.select('.public-location-hours-LocationHours__bold--2oLr-, .public-location-hours-LocationHours__green--2VoIr'))==0:
+        return "TBA"
+      return soup.select('.public-location-hours-LocationHours__bold--2oLr-, .public-location-hours-LocationHours__green--2VoIr')[0].find_next_sibling().text
    
    def recommendationHourToStay(self,soup):
      return soup.select('.attractions-attraction-detail-about-card-AboutSection__sectionWrapper--3PMQg')[0].text
 
    def findAllComment(self, soup):
-     comments = soup.select('.noQuotes')
+     comments = soup.select('.location-review-review-list-parts-ReviewTitle__reviewTitleText--2tFRT > span')
      result = []
      for comment in comments:
        result.append(comment.text) 
