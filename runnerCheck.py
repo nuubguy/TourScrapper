@@ -2,6 +2,7 @@
 import requests
 # from beautifulsoup4 import beautifulsoup4
 import bs4
+import xlsxwriter
 
 class TadPlace:
     def __init__(self):
@@ -47,26 +48,32 @@ class Scrappering:
      return bs4.BeautifulSoup(requests.get(url).text,'lxml')
 
   #  add TadPlace
-   def fillPlace(self, result, finalResult,soup):
+   def fillPlace(self, result, finalResult, soup, index, sheet):
+     indexStart = index
+     
      for start in result:
           currentSoup = self.initBs4("https://www.tripadvisor.co.id"+start['href'])
+          sheet.write(indexStart,0,start.text)
+          sheet.write(indexStart,1,''.join(self.findAllComment(currentSoup)))
+          sheet.write(indexStart,2,self.findRating(currentSoup))
+          sheet.write(indexStart,3,self.findImage(currentSoup))
+          sheet.write(indexStart,4,self.findLocation(currentSoup))
+          sheet.write(indexStart,5,self.openingHour(currentSoup))
+          indexStart+=1
           print(start.text)
-          print(self.findAllComment(currentSoup))
-          print(self.findRating(currentSoup))
-          print(self.findImage(currentSoup))
-          print(self.openingHour(currentSoup))
-          # print(self.recommendationHourToStay(currentSoup))
-          finalResult.append(start.text)
+     return indexStart        
 
    def findRating(self, soup):
      return soup.select('.overallRating')[0].text
-
+   
+   def findLocation(self, soup):
+     return soup.select('.locality')[0].text
 
    def findImage(self, soup):
      images = soup.select('div > .basicImg')
-     result = []
+     result = ""
      for image in images:
-       result.append(image['data-lazyurl'])
+       result+= "["+image['data-lazyurl']+"]"
      return result    
 
    def openingHour(self,soup):
@@ -94,56 +101,40 @@ class Scrappering:
 
   #  find place name      
    def findElementPlaceName(self, soup):
-        return soup.select('.listing_title > a, .title_with_snippets > a')
+        return soup.select('.listing_title > a, .title_with_snippets > a')      
 
 
 
    def initScrapper(self,surl):
        finalResult = []
        url = surl
+       
+       workbook = xlsxwriter.Workbook('LombokScrapper.xlsx')
+       worksheet = workbook.add_worksheet()
+       worksheet.write(0,0,"Place")
+       worksheet.write(0,1,"Comment")
+       worksheet.write(0,2,"Rating")
+       worksheet.write(0,3,"Image")
+       worksheet.write(0,4,"Location")
+       worksheet.write(0,5,"Opening Hour")
+       
+    
 
        soup = self.initBs4(url)
 
       # find element inside a html tag based on class and element tag with 2 different class
        result = self.findElementPlaceName(soup)
-       
-       while len(finalResult) < 500:
-        self.fillPlace(result,finalResult,soup)
+       index =1
+       while index < 2000:
+        index = self.fillPlace(result,finalResult,soup,index,worksheet)
         soup = self.reloadNextPage(soup)
         result = self.findElementPlaceName(soup)
-        print(len(finalResult))
-
-        
-       print(finalResult)
         
 
-      #  print(finalResult)
+       workbook.close() 
+           
+        
     
-
-            
-
-      # while len(finalResult)<500:
-
-         
-         
-         
-         
-         
-         
-         
-
-
-       
-
-         
-
-         
-
-       
-      #  print(secondTemp)
-      #  print(finalResult)    
-        
-      
 
 
 
